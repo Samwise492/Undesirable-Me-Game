@@ -39,9 +39,9 @@ public class ChangeScenes : MonoBehaviour
                 if (aubrey.IsDialogueFinished && !GUI.transform.GetChild(0).gameObject.activeSelf)
                 {
                     if (Input.GetKeyDown(KeyCode.E))
-                    {
+                    {  
                         doesLoadNewDay = true;
-                        StartCoroutine(LoadNewDay(3));
+            StartCoroutine(LoadNewDay(3));
                     }
                 }
             }

@@ -84,7 +84,7 @@ public class Talking : MonoBehaviour
         {
             player.isAbleToMove = true;
             isDialogueFinished = true;
-            GUI.transform.GetChild(0).gameObject.SetActive(false);
+            //GUI.transform.GetChild(0).gameObject.SetActive(false);
             dialogueLineIndex = 0;
             GUI.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "";
             Array.Clear(currentDialogue, 0, currentDialogue.Length);
@@ -140,6 +140,8 @@ public class Talking : MonoBehaviour
                 else
                     gameObject.GetComponent<ChoiceMaking>().enabled = true;
             }
+            StartCoroutine(CheckForTextWindow());
+                
         }
     }
 
@@ -177,5 +179,18 @@ public class Talking : MonoBehaviour
         player.isAbleToMove = false;
         isAbleToTalk = true;
         isDialogueStarted = true;
+    }
+    IEnumerator CheckForTextWindow()
+    {
+        yield return new WaitForEndOfFrame();
+
+        if (GUI.transform.GetChild(0).gameObject.activeSelf == true)
+            if (GUI.transform.GetChild(0).GetChild(0).GetComponent<Text>().text == "" && 
+            !GUI.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.activeSelf)
+            {
+                GUI.transform.GetChild(0).gameObject.SetActive(false);
+            }
+            
+        yield break;
     }
 }
