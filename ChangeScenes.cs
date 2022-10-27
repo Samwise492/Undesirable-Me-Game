@@ -12,6 +12,7 @@ public class ChangeScenes : MonoBehaviour
     [SerializeField] bool isBed;
     Talking aubrey;
     bool onTrigger, doesLoadNewDay;
+    public bool isChangedScene;
     Canvas GUI;
     SoundHandler soundHandler;
     SceneHandler_LevelOne sceneHandler_One;
@@ -24,12 +25,16 @@ public class ChangeScenes : MonoBehaviour
         sceneHandler_One = GameObject.FindObjectOfType<SceneHandler_LevelOne>();
         sceneHandler_Two = GameObject.FindObjectOfType<SceneHandler_LevelTwo>();
 
-        if (SceneManager.GetActiveScene().name == "Day 2")
+        if (isBed)
         {
             aubrey = GameObject.Find("Aubrey").GetComponent<Talking>();
         }
     }
 
+    void OnEnable()
+    {
+        
+    }
     void Update()
     {
         if (onTrigger == true)
@@ -78,6 +83,7 @@ public class ChangeScenes : MonoBehaviour
     }
     public void ChangeScene()
     {
+        isChangedScene = true;
         switch (sceneToOff)
         {
             case Scenes.Office:

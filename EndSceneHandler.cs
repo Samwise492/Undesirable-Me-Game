@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EndSceneHandler : MonoBehaviour
 {
@@ -10,6 +11,17 @@ public class EndSceneHandler : MonoBehaviour
     void Start()
     {
         StartCoroutine(OpenScenes());
+    }
+    void Update()
+    {
+        if (suicideScene.activeSelf || badScene.activeSelf || goodScene.activeSelf)
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                SceneManager.LoadSceneAsync("Main menu", LoadSceneMode.Single);
+                playerPoints.badPoints = 0;
+                playerPoints.goodPoints = 0;
+                playerPoints.deathPoints = 0;
+            }
     }
     IEnumerator OpenScenes()
     {
