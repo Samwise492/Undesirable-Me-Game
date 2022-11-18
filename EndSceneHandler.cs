@@ -8,10 +8,7 @@ public class EndSceneHandler : MonoBehaviour
     [SerializeField] PlayerPoints playerPoints;
     [SerializeField] GameObject suicideScene, badScene, goodScene;
 
-    void Start()
-    {
-        StartCoroutine(OpenScenes());
-    }
+    void Start() => StartCoroutine(OpenScenes());
     void Update()
     {
         if (suicideScene.activeSelf || badScene.activeSelf || goodScene.activeSelf)

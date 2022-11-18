@@ -12,7 +12,7 @@ public class DialogueInitialisation
 
     public static void Initialise()
     {
-        // Scene 1
+        // Day 1
         StreamReader reader = new StreamReader(path + "Doctor_1.txt");
         dialogues.Add(1, reader.ReadToEnd().Split('\n'));
 
@@ -25,7 +25,7 @@ public class DialogueInitialisation
         reader = new StreamReader(path + "McKinsey_1_3.txt");
         dialogues.Add(5, reader.ReadToEnd().Split('\n'));
 
-        // Scene 2
+        // Day 2
         reader = new StreamReader(path + "Aubrey_2.txt");
         dialogues.Add(6, reader.ReadToEnd().Split('\n'));
         reader = new StreamReader(path + "Aubrey_2_1.txt");
@@ -42,7 +42,7 @@ public class DialogueInitialisation
         reader = new StreamReader(path + "cancel_suicide.txt");
         dialogues.Add(12, reader.ReadToEnd().Split('\n'));
 
-        // Scene 3
+        // Day 3
         reader = new StreamReader(path + "Doctor_3.txt");
         dialogues.Add(13, reader.ReadToEnd().Split('\n'));
         reader = new StreamReader(path + "Doctor_3_1.txt");
@@ -50,6 +50,7 @@ public class DialogueInitialisation
         reader = new StreamReader(path + "Doctor_3_2.txt");
         dialogues.Add(15, reader.ReadToEnd().Split('\n'));
 
+        // Ending Scene
         reader = new StreamReader(path + "good_ending.txt");
         dialogues.Add(16, reader.ReadToEnd().Split('\n'));
         reader = new StreamReader(path + "bad_ending.txt");

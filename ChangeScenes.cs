@@ -9,10 +9,8 @@ public class ChangeScenes : MonoBehaviour
     [SerializeField] Scenes sceneToOn;
     [SerializeField] DoorSounds doorSound;
     [SerializeField] Transform teleportPosition;
-    [SerializeField] bool isBed;
-    Talking aubrey;
     bool onTrigger, doesLoadNewDay;
-    public bool isChangedScene;
+    public bool isSceneChanged;
     Canvas GUI;
     SoundHandler soundHandler;
     SceneHandler_LevelOne sceneHandler_One;
@@ -22,68 +20,54 @@ public class ChangeScenes : MonoBehaviour
     {
         GUI = GameObject.Find("GUI").GetComponent<Canvas>();
         soundHandler = GameObject.FindObjectOfType<SoundHandler>();
+
         sceneHandler_One = GameObject.FindObjectOfType<SceneHandler_LevelOne>();
         sceneHandler_Two = GameObject.FindObjectOfType<SceneHandler_LevelTwo>();
-
-        if (isBed)
-        {
-            aubrey = GameObject.Find("Aubrey").GetComponent<Talking>();
-        }
-    }
-
-    void OnEnable()
-    {
-        
     }
     void Update()
     {
         if (onTrigger == true)
         {
-            if (isBed)
+            // if door makes specific behaviour
+            if (gameObject.GetComponent<DoorBehaviour>() != null)
             {
-                if (aubrey.IsDialogueFinished && !GUI.transform.GetChild(0).gameObject.activeSelf)
-                {
-                    if (Input.GetKeyDown(KeyCode.E))
-                    {  
-                        doesLoadNewDay = true;
-            StartCoroutine(LoadNewDay(3));
+                if (gameObject.GetComponent<DoorBehaviour>().isLocked)
+                    if (Input.GetKeyUp(KeyCode.W))
+                    {
+                        // WIP
                     }
-                }
-            }
-            else
-            {
-                if (gameObject.GetComponent<DoorBehaviour>() != null)
-                {
-                    if (gameObject.GetComponent<DoorBehaviour>().isLocked)
-                        if (Input.GetKeyUp(KeyCode.W))
-                        {
-                            // WIP
-                        }
-                    else if (!gameObject.GetComponent<DoorBehaviour>().isLocked)
-                        if (Input.GetKeyUp(KeyCode.W))
-                        {
-                            ChangeScene();
-                        }
-                }
-                else if (!GUI.transform.GetChild(0).gameObject.activeSelf) 
+                else if (!gameObject.GetComponent<DoorBehaviour>().isLocked)
                     if (Input.GetKeyUp(KeyCode.W))
                     {
                         ChangeScene();
                     }
             }
+            // if door does not make specific behaviour
+            else if (!GUI.transform.GetChild(0).gameObject.activeSelf) 
+                if (Input.GetKeyUp(KeyCode.W))
+                {
+                    ChangeScene();
+                }
         }
     }
-    void OnTriggerStay2D(Collider2D col)
-    {
-        onTrigger = true;
-    }
-    void OnTriggerExit2D(Collider2D col)
-    {
-        onTrigger = false;
-    }
+
+    void OnTriggerStay2D(Collider2D col) => onTrigger = true;
+    void OnTriggerExit2D(Collider2D col) => onTrigger = false;
+
     public void ChangeScene()
     {
-        isChangedScene = true;
+        isSceneChanged = true;
+        
+        OffScene();
+        OnScene();
+        
+        MakeSound();
+
+        TeleportPlayer();   
+    }
+
+    public void OffScene()
+    {
         switch (sceneToOff)
         {
             case Scenes.Office:
@@ -105,7 +89,13 @@ public class ChangeScenes : MonoBehaviour
             case Scenes.Kitchen:
                 sceneHandler_Two.kitchenScene.SetActive(false);
                 break;
+
+            case Scenes.None:
+                break;
         }
+    }
+    public void OnScene()
+    {
         switch (sceneToOn)
         {
             case Scenes.Office:
@@ -131,9 +121,13 @@ public class ChangeScenes : MonoBehaviour
             case Scenes.Kitchen:
                 sceneHandler_Two.kitchenScene.SetActive(true);
                 break;
+
+            case Scenes.None:
+                break;
         }
-        
-        // Visual stuff
+    }
+    public void MakeSound()
+    {
         switch (doorSound)
         {
             case DoorSounds.Door:
@@ -146,7 +140,9 @@ public class ChangeScenes : MonoBehaviour
                 soundHandler.stairs.Play();
                 break;
         }
-        
+    }
+    public void TeleportPlayer()
+    {
         if (teleportPosition == null)
         {
             if (!doesLoadNewDay)
@@ -165,13 +161,14 @@ public class ChangeScenes : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName("Loading Screen"));
-        
         foreach(Transform child in GameObject.Find("Days").transform)
         {
             child.gameObject.SetActive(true);
         }
+
         GameObject dayToLoadObject = GameObject.Find("Day " + dayToLoad.ToString());
         dayToLoadObject.SetActive(true);
+
         foreach(Transform child in GameObject.Find("Days").transform)
         {
             if (child.name != dayToLoadObject.name)
@@ -187,11 +184,11 @@ public class ChangeScenes : MonoBehaviour
     public enum Scenes
     {
         Office, HospitalHall, Archive, HospitalExit,
-        Room, HouseHall, Kitchen
+        Room, HouseHall, Kitchen,
+        None
     }
     public enum DoorSounds
     {
         Door, WayIn, Stairs
-    }
-    
+    } 
 }

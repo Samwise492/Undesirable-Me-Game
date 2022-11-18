@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Storage of in-level scenes
-public class SceneHandler_LevelTwo : MonoBehaviour
+public class SceneHandler_LevelThree : MonoBehaviour
 {
-    public GameObject roomScene;
-    public GameObject houseHallScene;
-    public GameObject kitchenScene;
+    public GameObject officeScene;
 
     void Awake() 
     {

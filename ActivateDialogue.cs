@@ -6,18 +6,13 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Talking))]
 public class ActivateDialogue : MonoBehaviour
 {
-    [SerializeField] int dialogueNumber;
-
-    void Start() 
-    {
-        StartCoroutine(WaitForDialogue());
-    }
     void OnDisable() => Destroy(this.gameObject);
+    void Start() => StartCoroutine(WaitForDialogue());
 
     IEnumerator WaitForDialogue()
     {
         yield return new WaitForSeconds(0.1f);
-        gameObject.GetComponent<Talking>().PlayDialogue(dialogueNumber);
+        gameObject.GetComponent<Talking>().PlayDialogue(gameObject.GetComponent<Talking>().dialogueNumber);
 
         yield break;
     }

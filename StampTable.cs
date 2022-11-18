@@ -5,21 +5,21 @@ using UnityEngine;
 public class StampTable : MonoBehaviour
 {
     [SerializeField] PlayerPoints playerPoints;
-    [SerializeField] Canvas canvas;
-    [SerializeField] int dialogueNumber;
     [SerializeField] DoorBehaviour doorToLock;
-    bool isSealStamped;
-    bool isAbleToStamp;
+    GameObject stampTableScreen;
+    Talking talkingComponent;
     Player player;
     SoundHandler soundHandler;
-    
-    
+    bool isSealStamped, isAbleToStamp;
+
     void Start() 
     {
-        gameObject.GetComponent<Talking>().enabled = false;
-
         soundHandler = GameObject.FindObjectOfType<SoundHandler>();
+        stampTableScreen = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).gameObject;
         player = GameObject.FindObjectOfType<Player>();
+        talkingComponent = gameObject.GetComponent<Talking>();
+
+        talkingComponent.enabled = false;
         player.isAbleToMove = true;
     }
     void Update()
@@ -30,44 +30,39 @@ public class StampTable : MonoBehaviour
             {
                 if (isSealStamped == false)
                 {
-                    canvas.gameObject.transform.GetChild(1).gameObject.SetActive(true);
+                    stampTableScreen.SetActive(true);
                     player.isAbleToMove = false;
                 }
             }
         }
     }
+    
+    void OnTriggerStay2D() => isAbleToStamp = true;
+    void OnTriggerExit2D() => isAbleToStamp = false;
 
     public void RealSeal()
     {
-        gameObject.GetComponent<Talking>().PlayDialogue(dialogueNumber);
+        talkingComponent.PlayDialogue(talkingComponent.dialogueNumber);
         
         isSealStamped = true;
         doorToLock.isLocked = false;
         playerPoints.badPoints += 1;
 
-        canvas.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+        stampTableScreen.SetActive(false);
         soundHandler.stamp.Play();
-        gameObject.GetComponent<Talking>().enabled = true;
+        talkingComponent.enabled = true;
     }
     public void FakeSeal()
     {
-        gameObject.GetComponent<Talking>().PlayDialogue(dialogueNumber);
+        talkingComponent.PlayDialogue(talkingComponent.dialogueNumber);
         
         isSealStamped = true;
         doorToLock.isLocked = false;
         playerPoints.goodPoints += 1;
 
-        canvas.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+        stampTableScreen.SetActive(false);
         soundHandler.stamp.Play();
-        gameObject.GetComponent<Talking>().enabled = true;
+        talkingComponent.enabled = true;
     }
 
-    void OnTriggerStay2D()
-    {
-        isAbleToStamp = true;
-    }
-    void OnTriggerExit2D()
-    {
-        isAbleToStamp = false;
-    }
 }

@@ -23,11 +23,11 @@ public class CurseHandler : MonoBehaviour
 
             foreach (var door in doors)
             {
-                if (door.isChangedScene == true)
+                if (door.isSceneChanged == true)
                 {
-                    door.isChangedScene = false;
-                    int randomValue = randomiser.Next(4);
+                    door.isSceneChanged = false;
 
+                    int randomValue = randomiser.Next(4);
                     if (randomValue == 1)
                         isWorldCursed = true;
                     else

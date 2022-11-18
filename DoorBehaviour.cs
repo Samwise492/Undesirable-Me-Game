@@ -3,27 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 public class DoorBehaviour : MonoBehaviour
 {
-    // lock state
     public bool isLocked;
-    // is triggering dialogue
-    [SerializeField, HideInInspector] bool isPlayingDialogue;
-    [SerializeField, HideInInspector] int dialogueNumber;
-
+    [SerializeField] bool doesActivateDialogue;
     bool isPlayerNear;
     Talking talkingComponent;
-    ChangeScenes changeScenesComp;
+    ChangeScenes changeScenesComponent;
 
     void Start()
     {
         talkingComponent = this.GetComponent<Talking>();
-        changeScenesComp = this.GetComponent<ChangeScenes>();
-        changeScenesComp.enabled = false;
+        changeScenesComponent = this.GetComponent<ChangeScenes>();
+        changeScenesComponent.enabled = false;
     }
 
     void Update()
@@ -31,28 +24,23 @@ public class DoorBehaviour : MonoBehaviour
         if (isPlayerNear)
             if (Input.GetKeyUp(KeyCode.W))
             {
-                if (isPlayingDialogue)
+                if (!isLocked)
                 {
-                    isPlayingDialogue = false;
-                    talkingComponent.enabled = true;
-                    talkingComponent.PlayDialogue(dialogueNumber);
-                    StartCoroutine(CheckForDialogueEnd());
+                    changeScenesComponent.enabled = true;
                 }
-                else if (!isLocked)
+                if (doesActivateDialogue)
                 {
-                    changeScenesComp.enabled = true;
+                    doesActivateDialogue = false;
+
+                    talkingComponent.enabled = true;
+                    talkingComponent.PlayDialogue(talkingComponent.dialogueNumber);
+                    StartCoroutine(CheckForDialogueEnd());
                 }
             }
     }
-    // check is player near
-    void OnTriggerEnter2D()
-    {
-        isPlayerNear = true;
-    }
-    void OnTriggerExit2D()
-    {
-        isPlayerNear = false;
-    }
+
+    void OnTriggerEnter2D() => isPlayerNear = true;
+    void OnTriggerExit2D() => isPlayerNear = false;
 
     IEnumerator CheckForDialogueEnd()
     {
@@ -60,38 +48,12 @@ public class DoorBehaviour : MonoBehaviour
         {
             if (this.GetComponent<Talking>().IsDialogueFinished)
             {
-                changeScenesComp.enabled = true;
-                changeScenesComp.ChangeScene();
+                changeScenesComponent.enabled = true;
+                changeScenesComponent.ChangeScene();
                 yield break;
             }
 
             yield return new WaitForEndOfFrame();
         }
     }
-    
-
-#if UNITY_EDITOR
-    [CustomEditor(typeof(DoorBehaviour))]
-    [CanEditMultipleObjects]
-    public class DoorBehaviour_Editor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector(); // for other non-HideInInspector fields
-    
-            DoorBehaviour script = (DoorBehaviour)target;
-            
-            script.isPlayingDialogue = EditorGUILayout.Toggle("Play Dialogue", script.isPlayingDialogue);
-            if (script.isPlayingDialogue)
-            {
-                script.isPlayingDialogue = true;
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Dialogue (№)", GUILayout.Width(120));
-                script.dialogueNumber = EditorGUILayout.IntField(script.dialogueNumber, GUILayout.Width(100));
-                GUILayout.EndHorizontal();
-            }
-            else script.isPlayingDialogue = false;
-        }
-    }
- #endif
 }

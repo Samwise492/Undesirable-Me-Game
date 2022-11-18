@@ -8,13 +8,11 @@ public class Cheats : MonoBehaviour
     bool startValue;
     DoorBehaviour[] doorBehaviourObjects;
 
-    void Awake()
-    {
-        startValue = isDoorUnlocked;
-    }
+    void Awake() => startValue = isDoorUnlocked;
     void OnValidate()
     {
-        if (Application.isPlaying) {
+        if (Application.isPlaying) 
+        {
             if (isDoorUnlocked != startValue)
             {
                 doorBehaviourObjects = Resources.FindObjectsOfTypeAll<DoorBehaviour>();
@@ -23,8 +21,6 @@ public class Cheats : MonoBehaviour
                     component.isLocked = !isDoorUnlocked;
                 }
             }
-            
         }
-        
     }
 }

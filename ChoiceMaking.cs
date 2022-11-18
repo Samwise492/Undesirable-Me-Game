@@ -11,8 +11,13 @@ public class ChoiceMaking : MonoBehaviour
 
     void Start()
     {
-        GameObject.Find("GUI").transform.GetChild(0).gameObject.SetActive(true);
-        foreach (Transform choiceLine in GameObject.Find("GUI").transform.GetChild(0).GetChild(0).transform)
+        var dialogueTextField = GameObject.Find("GUI").transform.GetChild(0).GetChild(0).GetChild(0);
+
+        foreach (Transform child in GameObject.Find("GUI").transform)
+        {
+            child.gameObject.SetActive(true);
+        }
+        foreach (Transform choiceLine in dialogueTextField.transform)
         {
             choiceLine.gameObject.SetActive(true);
             buttons.Add(choiceLine.gameObject.GetComponent<Button>());
@@ -22,6 +27,18 @@ public class ChoiceMaking : MonoBehaviour
         buttons[0].transform.GetChild(0).GetComponent<Text>().text = choiceText_One;
         buttons[1].onClick.AddListener(() => MakeChoice(2));
         buttons[1].transform.GetChild(0).GetComponent<Text>().text = choiceText_Two;
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            buttons[0].onClick.Invoke();
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            buttons[1].onClick.Invoke();
+        }
     }
 
     void MakeChoice(int lineObjectNumber)
@@ -35,7 +52,7 @@ public class ChoiceMaking : MonoBehaviour
             gameObject.GetComponent<Talking>().PlayDialogue(dialogueNumber_Two);
         }
 
-        foreach (Transform choiceLine in GameObject.Find("GUI").transform.GetChild(0).GetChild(0).transform)
+        foreach (Transform choiceLine in GameObject.Find("GUI").transform.GetChild(0).GetChild(1).transform)
         {
             choiceLine.gameObject.SetActive(false);
         }

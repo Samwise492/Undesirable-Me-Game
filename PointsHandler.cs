@@ -11,10 +11,16 @@ public class PointsHandler : MonoBehaviour
     [SerializeField] float fadeSpeed;
     [SerializeField] Image background;
     Color defaultColor;
+    bool _isLastDialogueStarted;
+    Transform dialogueTextField;
+    Transform fadingScreen;
 
     void Start()
     {
         GUI = GameObject.Find("GUI");
+        dialogueTextField = GUI.transform.GetChild(0).GetChild(0).GetChild(0);
+        fadingScreen = GUI.transform.GetChild(2);
+
         StartCoroutine(CheckForPoints());
     }
 
@@ -22,29 +28,42 @@ public class PointsHandler : MonoBehaviour
     {
         while (true)
         {
+            // Death
             if (playerPoints.deathPoints >= 2 && !GUI.transform.GetChild(0).gameObject.activeSelf)
             {
-                GUI.transform.GetChild(2).gameObject.SetActive(true);
+                fadingScreen.gameObject.SetActive(true);
                 yield return new WaitForSeconds(1);
                 StartCoroutine(FadeScreen());
 
                 yield break;
             }
-            else if (playerPoints.badPoints >= 2 && !GUI.transform.GetChild(0).gameObject.activeSelf)
+            else if (playerPoints.badPoints >= 2)
             {
-                GUI.transform.GetChild(2).gameObject.SetActive(true);
-                yield return new WaitForSeconds(1);
-                StartCoroutine(FadeScreen());
+                if (GameObject.Find("Doctor") != null) // if ending scene
+                    _isLastDialogueStarted = GameObject.Find("Doctor").GetComponent<Talking>().isLastDialogueStarted;
 
-                yield break;
+                if (!dialogueTextField.gameObject.activeSelf && _isLastDialogueStarted)
+                {
+                    fadingScreen.gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                    StartCoroutine(FadeScreen());
+
+                    yield break;
+                }
             }
-            else if (playerPoints.goodPoints >= 2 && !GUI.transform.GetChild(0).gameObject.activeSelf)
+            else if (playerPoints.goodPoints >= 2)
             {
-                GUI.transform.GetChild(2).gameObject.SetActive(true);
-                yield return new WaitForSeconds(1);
-                StartCoroutine(FadeScreen());
+                if (GameObject.Find("Doctor") != null) // if ending scene
+                    _isLastDialogueStarted = GameObject.Find("Doctor").GetComponent<Talking>().isLastDialogueStarted;
 
-                yield break;
+                if (!GUI.transform.GetChild(0).gameObject.activeSelf && _isLastDialogueStarted)
+                {
+                    fadingScreen.gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                    StartCoroutine(FadeScreen());
+
+                    yield break;
+                }
             }
 
             yield return new WaitForEndOfFrame();
@@ -65,6 +84,7 @@ public class PointsHandler : MonoBehaviour
             if (background.color.a >= 1)
             {
                 SceneManager.LoadSceneAsync("End Scene", LoadSceneMode.Single);
+                
                 yield break;
             }
         }

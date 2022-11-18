@@ -4,25 +4,23 @@ using UnityEngine;
 
 public class PictureBehaviour : MonoBehaviour
 {
-    [SerializeField] protected CurseHandler curseHandler;
-    protected SpriteRenderer cursedImage, regularImage;
+    CurseHandler curseHandler;
+    SpriteRenderer cursedImage, regularImage;
 
     void Awake()
     {
+        curseHandler = GameObject.FindObjectOfType<CurseHandler>();
         cursedImage = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         regularImage = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
     }
-    void OnEnable()
-    {
-        StartCoroutine(CheckForCurse());
-    }
+    void OnEnable() => StartCoroutine(CheckForCurse());
 
     void Curse()
     {
         regularImage.gameObject.SetActive(false);
         cursedImage.gameObject.SetActive(true);
     }
-    void Restore()
+    void BackToNormal()
     {   
         regularImage.gameObject.SetActive(true);
         cursedImage.gameObject.SetActive(false);
@@ -32,11 +30,9 @@ public class PictureBehaviour : MonoBehaviour
         yield return new WaitForEndOfFrame();
         
         if (curseHandler.isWorldCursed)
-        {
             Curse();
-        }
         else
-            Restore();
+            BackToNormal();
 
         yield break;
     }

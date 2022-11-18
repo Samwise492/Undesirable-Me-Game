@@ -10,15 +10,9 @@ public class Player : MonoBehaviour
     public Animator animator;
     public AudioSource footSound;
     Vector3 direction;
-    Canvas GUI;
-    bool isPaused;
     [HideInInspector] public bool isAbleToMove;
 
-    void Awake()
-    {
-        isAbleToMove = true;
-        GUI = GameObject.Find("GUI").GetComponent<Canvas>();
-    }
+    void Awake() => isAbleToMove = true;
     void Update()
     {
         if (isAbleToMove)
@@ -35,18 +29,17 @@ public class Player : MonoBehaviour
                 animator.SetBool("isWalking", true);
             }
             else animator.SetBool("isWalking", false);
+
             direction *= speed;
             rb.velocity = direction;
 
             if (direction.x > 0) // if speed more than 0
-                spriteRenderer.flipX = false; // cancel reflection effect
+                spriteRenderer.flipX = false; // then cancel reflection effect
             if (direction.x < 0)
                 spriteRenderer.flipX = true;
         }
         else if (!isAbleToMove) 
-        {
             this.GetComponent<Animator>().SetBool("isWalking", false);
-        }
     }
     public void PlayFootSound()
     {
