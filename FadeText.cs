@@ -1,25 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class FadeText : MonoBehaviour
 {
-    [SerializeField] float fadeSpeed;
-    Text textToFade;
-    Color defaultColor;
-    bool isIncreasing = true;
-    bool isDecreasing = false;
+    [SerializeField] private float fadeSpeed;
+    [SerializeField] private float freezeDuration;
 
-    void Start()
-    {
-        textToFade = this.GetComponent<Text>();
-        defaultColor = textToFade.color;
-        StartCoroutine(_FadeText());
-    }
+    private Text textToFade => GetComponent<Text>();
+    private Color defaultColor => textToFade.color;
 
-    IEnumerator _FadeText()
+    private bool isIncreasing = true;
+    private bool isDecreasing = false;
+
+    private void Start() => StartCoroutine(Fade());
+
+    private IEnumerator Fade()
     {
         Color varToDecrease = defaultColor;
 
@@ -29,28 +26,37 @@ public class FadeText : MonoBehaviour
             {
                 varToDecrease.a += fadeSpeed;
                 textToFade.color = varToDecrease;
+
                 yield return new WaitForSeconds(0.15f);
             }
             else 
             {
                 isIncreasing = false;
+
                 if (isDecreasing == false)
-                    yield return new WaitForSeconds(2);
+                {
+                    yield return new WaitForSeconds(freezeDuration);
+                }
+
                 isDecreasing = true;
                 
                 if (textToFade.color.a >= 0 && !isIncreasing)
                 {
                     varToDecrease.a -= fadeSpeed;
                     textToFade.color = varToDecrease;
+
                     yield return new WaitForSeconds(0.15f);
 
                     if (textToFade.color.a <= 0)
                     {
+                        transform.parent.gameObject.SetActive(false);
                         SceneManager.LoadSceneAsync(textToFade.text, LoadSceneMode.Single);
+
                         yield break;
                     }
                 }
             }
+
             yield return new WaitForEndOfFrame();
         }  
     }

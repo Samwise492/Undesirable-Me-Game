@@ -1,39 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CurseHandler : MonoBehaviour
 {
-    public bool isWorldCursed;
-    ChangeScenes[] doors;
-    System.Random randomiser;
+    public bool IsWorldCursed => isWorldCursed;
 
-    void Start()
-    {
-        doors = Resources.FindObjectsOfTypeAll<ChangeScenes>();
-        randomiser = new System.Random();
+    private Door[] doors => Resources.FindObjectsOfTypeAll<Door>();
 
-        StartCoroutine(RandomCurse());
-    }
-    IEnumerator RandomCurse()
+    private System.Random randomiser = new System.Random();
+    private bool isWorldCursed;
+
+    private void Start()
     {
-        while (true)
+        foreach (Door door in doors)
         {
-            yield return new WaitForEndOfFrame();
-
-            foreach (var door in doors)
-            {
-                if (door.isSceneChanged == true)
-                {
-                    door.isSceneChanged = false;
-
-                    int randomValue = randomiser.Next(4);
-                    if (randomValue == 1)
-                        isWorldCursed = true;
-                    else
-                        isWorldCursed = false;
-                }
-            }
+            door.OnSceneChange.AddListener(RandomCurse);
         }
+    }
+    private void OnDestroy()
+    {
+        foreach (Door door in doors)
+        {
+            door.OnSceneChange.RemoveAllListeners();
+        }
+    }
+
+    private void RandomCurse()
+    {
+        int randomValue = randomiser.Next(4);
+
+        if (randomValue == 1)
+            isWorldCursed = true;
+        else
+            isWorldCursed = false;
     }
 }
