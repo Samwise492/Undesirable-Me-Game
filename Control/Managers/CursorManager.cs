@@ -4,7 +4,8 @@ public class CursorManager : MonoBehaviour
 {
     public bool isMute;
 
-    private AudioSource clickSound => GetComponent<AudioSource>();
+    [SerializeField]
+    private AudioSource audioSource;
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class CursorManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && !isMute)
         {
-            clickSound.Play();
+            audioSource.Play();
         } 
     }
 }

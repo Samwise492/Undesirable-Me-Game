@@ -2,24 +2,37 @@ using UnityEngine;
 
 public class CheatSystem : MonoBehaviour
 {
+    [Header("Player")]
+    [SerializeField]
+    private bool isPlayerCustomisable;
+    [SerializeField]
+    private float customPlayerSpeed;
+
     [Header("Doors")]
-    [SerializeField] private bool isDoorUnlocked;
+    [SerializeField] 
+    private bool areDoorsUnlocked;
 
     [Header("Player Points")]
-    [SerializeField] private bool isPointsReset;
-    [SerializeField] private PlayerPoints playerPoints;
+    [SerializeField] 
+    private bool isPointsReset;
+    [SerializeField] 
+    private PlayerConfiguration playerConfiguration;
     
     private SpecificDoorBehaviour[] doors;
 
-    private bool isDoorUnlocked_atStart;
+    private bool areDoorsUnlocked_atStart;
+
     private string cheatTag = $"<color=red>[Cheats]</color>";
 
-    private void Awake() => isDoorUnlocked_atStart = isDoorUnlocked;
+    private void Awake()
+    {
+        areDoorsUnlocked_atStart = areDoorsUnlocked;
+    }
     private void Start()
     {
         if (isPointsReset)
         {
-            playerPoints.ResetPoints();
+            playerConfiguration.ResetPoints();
             print($"{cheatTag} <i>Player points have been reset</i>");
         }
     }
@@ -27,15 +40,20 @@ public class CheatSystem : MonoBehaviour
     {
         if (Application.isPlaying) 
         {
-            if (isDoorUnlocked != isDoorUnlocked_atStart)
+            if (areDoorsUnlocked != areDoorsUnlocked_atStart)
             {
-                doors = Resources.FindObjectsOfTypeAll<SpecificDoorBehaviour>();
+                doors = FindObjectsOfType<SpecificDoorBehaviour>(true);
 
                 foreach (SpecificDoorBehaviour door in doors)
                 {
-                    door.isLocked = !isDoorUnlocked;
+                    door.isLocked = !areDoorsUnlocked;
                     print($"{cheatTag} <i>Door has been cracked.</i>");
                 }
+            }
+
+            if (isPlayerCustomisable)
+            {
+                FindObjectOfType<Player>().moveSpeed = customPlayerSpeed;
             }
         }
     }

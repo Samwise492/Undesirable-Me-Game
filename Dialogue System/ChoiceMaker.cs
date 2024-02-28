@@ -1,96 +1,61 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using System;
 
-[RequireComponent(typeof(Dialogue))]
 public class ChoiceMaker : MonoBehaviour
 {
-    [HideInInspector] public UnityEvent<int> OnChoiceMade;
+    /// <summary>
+    /// We throw what dialogue choiced.
+    /// </summary>
+    public event Action<DialogueData> OnChoiceMade;
 
-    public bool IsChoiceMade => isChoiceMade;
+    public event Action<int, List<string>, List<Action>> OnInit;
 
-    [SerializeField] private ChoiceContainer[] choiceContainers;
+    [SerializeField]
+    private ChoiceContainer[] choiceContainers;
 
-    private GameManager gameManager => FindObjectOfType<GameManager>();
-    private Player player => FindObjectOfType<Player>();
-    private Dialogue dialogue => GetComponent<Dialogue>();
-    
-    private List<Button> choiceButtons = new List<Button>();
-    private bool isChoiceMade, isInitialised;
-
-    private void Start()
-    {
-        dialogue.OnDialogueStarted?.AddListener(delegate { if (!isInitialised) InitialiseButtons(); });
-        dialogue.OnDialogueFinished?.AddListener(delegate { if (!isChoiceMade) gameManager.SetWindow(GameManager.UIWindows.ChoiceWindow); });
-    }
-    private void OnDestroy()
-    {
-        dialogue.OnDialogueStarted?.RemoveAllListeners();
-        dialogue.OnDialogueFinished?.RemoveAllListeners();
-    }
+    private bool isInited;
 
     private void Update()
     {
-        if (gameManager.GetActiveWindow() == GameManager.UIWindows.ChoiceWindow)
+        if (isInited)
         {
-            for (int i = 0; i < choiceButtons.Count; i++)
+            if (UIManager.Instance.GetActiveWindow() == UIManager.UIWindows.ChoiceWindow)
             {
-                if (Input.GetKeyDown((i + 1).ToString()))
+                for (int i = 0; i < choiceContainers.Length; i++)
                 {
-                    choiceButtons[i].onClick.Invoke();
+                    if (Input.GetKeyDown((i + 1).ToString()))
+                    {
+                        MakeChoice(choiceContainers[i].dialogueData);
+                    }
                 }
             }
         }
     }
-    
-    private void InitialiseButtons()
+
+    public void InitialiseChoices()
     {
-        for (int i = 0; i < gameManager.GetChoiceLines().Length; i++)
+        List<string> choiceLines = new();
+        List<Action> actions = new();
+
+        for (int i = 0; i < choiceContainers.Length; i++)
         {
             int cachedIndex = i;
 
-            choiceButtons.Add(gameManager.GetChoiceLines()[cachedIndex]);
-
-            choiceButtons[cachedIndex].GetComponentInChildren<Text>().text = choiceContainers[cachedIndex].choiceLine;
-            choiceButtons[cachedIndex].onClick.AddListener(() => MakeChoice(choiceContainers[cachedIndex].dialogueData, choiceContainers[cachedIndex].isRepeating, cachedIndex+1));
+            choiceLines.Add(choiceContainers[cachedIndex].choiceLine);
+            actions.Add(() => MakeChoice(choiceContainers[cachedIndex].dialogueData));
         }
 
-        isInitialised = true;
-    }
-    private void DeinitialiseButtons()
-    {
-        for (int i = 0; i < gameManager.GetChoiceLines().Length; i++)
-        {
-            int cachedIndex = i;
+        isInited = true;
 
-            choiceButtons[cachedIndex].GetComponentInChildren<Text>().text = "";
-            choiceButtons[cachedIndex].onClick.RemoveAllListeners();//RemoveListener(() => MakeChoice(choiceContainers[cachedIndex].dialogueData, choiceContainers[cachedIndex].isRepeating, cachedIndex + 1));
-        }
+        OnInit?.Invoke(choiceContainers.Length, choiceLines, actions);
     }
 
-    private void MakeChoice(DialogueData dialogueData, bool isRepeating, int dialogueIndex)
+    private void MakeChoice(DialogueData dialogueData)
     {
-        if (dialogueData)
-        {
-            gameManager.SetWindow(GameManager.UIWindows.DialogueWindow);
-            dialogue.LoadNewDialogueData(dialogueData, isRepeating);
-        }
-        else
-        {
-            gameManager.SetWindow(null);
-            player.AllowMovement();
-        }
+        UIManager.Instance.SetWindow(UIManager.UIWindows.DialogueWindow);
 
-        if (!isRepeating)
-        {
-            isChoiceMade = true;
-            dialogue.OnDialogueFinished.RemoveListener(() => gameManager.SetWindow(GameManager.UIWindows.ChoiceWindow));
-            DeinitialiseButtons();
-        }
-
-        OnChoiceMade?.Invoke(dialogueIndex);
+        OnChoiceMade?.Invoke(dialogueData);
     }
 }
 

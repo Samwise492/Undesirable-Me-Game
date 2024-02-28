@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    [SerializeField] SoundData soundData;
-    
-    private AudioSource currentSound => GetComponent<AudioSource>();
+    [SerializeField] 
+    private SoundData soundData;
+
+    [SerializeField]
+    private AudioSource audioSource;
 
     public void PlaySound(SoundType type)
     {
@@ -12,11 +14,11 @@ public class SoundManager : MonoBehaviour
         {
             if (sound._name == type.ToString())
             {
-                currentSound.clip = sound.audioClip;
+                audioSource.clip = sound.audioClip;
             }
         }
 
-        currentSound.Play();
+        audioSource.Play();
     }
 
     public enum SoundType

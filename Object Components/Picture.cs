@@ -3,9 +3,15 @@ using UnityEngine;
 
 public class Picture : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer cursedImage, idleImage;
+#if UNITY_EDITOR
+    [ReadOnly]
+#endif
+    public bool isCursed;
 
-    private CurseHandler curseHandler => FindObjectOfType<CurseHandler>();
+    [SerializeField]
+    private SpriteRenderer cursedImage;
+    [SerializeField]
+    private SpriteRenderer idleImage;
 
     private void OnEnable() => StartCoroutine(CheckForCurse());
 
@@ -24,7 +30,7 @@ public class Picture : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         
-        if (curseHandler.IsWorldCursed)
+        if (isCursed)
             Curse();
         else
             BackToIdle();

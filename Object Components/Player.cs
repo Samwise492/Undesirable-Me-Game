@@ -1,27 +1,29 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
-    public bool IsAbleToMove => isAbleToMove;
+    [Header("Parameters")]
+    public float moveSpeed = 3.5f;
 
-    [SerializeField] private float speed = 3.5f;
+    [Header("Components")]
+    [SerializeField]
+    private Rigidbody2D rb;
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private Animator animator;
+    [SerializeField]
+    private AudioSource footAudioSource;
 
-    private Rigidbody2D rb => GetComponent<Rigidbody2D>();
-    private SpriteRenderer spriteRenderer => GetComponent<SpriteRenderer>();
-    private Animator animator => GetComponent<Animator>();
-    private AudioSource footSound => GetComponent<AudioSource>();
-    
     private Vector3 direction;
-    private bool isAbleToMove;
 
-    private void Awake() => isAbleToMove = true;
-    
+    private bool isAbleToMove = true;
+
     private void Update()
     {
         if (isAbleToMove)
         {
-            direction = Vector3.zero; 
+            direction = Vector3.zero;
 
             if (Input.GetKey(KeyCode.A))
             {
@@ -37,19 +39,19 @@ public class Player : MonoBehaviour
 
                 animator.SetBool("isWalking", true);
             }
-            else 
+            else
             {
                 animator.SetBool("isWalking", false);
             }
 
-            direction *= speed;
+            direction *= moveSpeed;
             rb.velocity = direction;
         }
     }
-    
+
     public void PlayFootSound()
     {
-        footSound.Play();
+        footAudioSource.Play();
     }
 
     public void ProhibitMovement()
@@ -65,8 +67,8 @@ public class Player : MonoBehaviour
     private void FlipSprite()
     {
         if (direction.x > 0)
-                spriteRenderer.flipX = false;
-            else if (direction.x < 0)
-                spriteRenderer.flipX = true;
+            spriteRenderer.flipX = false;
+        else if (direction.x < 0)
+            spriteRenderer.flipX = true;
     }
 }

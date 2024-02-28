@@ -3,14 +3,26 @@ using UnityEngine;
 
 public class LivingPicture : MonoBehaviour
 {
-    [SerializeField] private Transform leftBorder, rightBorder;
+#if UNITY_EDITOR
+    [ReadOnly]
+#endif
+    public bool isCursed;
 
-    [Space]
-    [SerializeField] private Transform cursedStatesNest;
-    [SerializeField] private SpriteRenderer idleState;
+    [HideInInspector]
+    public PlayerPosition playerPosition;
 
-    private CurseHandler curseHandler => FindObjectOfType<CurseHandler>();
-    private Player player => FindObjectOfType<Player>();
+    public Transform LeftBorder => leftBorder;
+    public Transform RightBorder => rightBorder;
+
+    [SerializeField]
+    private Transform leftBorder;
+    [SerializeField]
+    private Transform rightBorder;
+
+    [Space][SerializeField] 
+    private Transform cursedStatesNest;
+    [SerializeField] 
+    private SpriteRenderer idleState;
 
     private SpriteRenderer[] cursedStates = new SpriteRenderer[3];
 
@@ -24,18 +36,6 @@ public class LivingPicture : MonoBehaviour
         }
     }
     private void OnEnable() => StartCoroutine(CheckForCurse());
-
-    private PlayerPosition? GetPlayerPosition()
-    {
-        if (player.gameObject.transform.position.x < leftBorder.position.x)
-            return PlayerPosition.left;
-        else if (player.gameObject.transform.position.x > leftBorder.position.x && player.gameObject.transform.position.x < rightBorder.position.x)
-            return PlayerPosition.centre;
-        else if (player.gameObject.transform.position.x > rightBorder.position.x)
-            return PlayerPosition.right;
-
-        return null;
-    }
 
     private void Curse()
     {
@@ -62,18 +62,19 @@ public class LivingPicture : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         
-        if (curseHandler.IsWorldCursed)
+        if (isCursed)
             Curse();
         else
             BackToIdle();
         
         yield break;
     }
+
     private IEnumerator PlayCursedAnimation()
     {
         while (true)
         {
-            switch (GetPlayerPosition())
+            switch (playerPosition)
             {
                 case PlayerPosition.left:
                     TurnOffCursedImages();
@@ -89,14 +90,14 @@ public class LivingPicture : MonoBehaviour
                     break;
             }
 
-            if (!curseHandler.IsWorldCursed)
+            if (!isCursed)
                 yield break;
                 
             yield return new WaitForSeconds(1);
         }
     }
 
-    private enum PlayerPosition
+    public enum PlayerPosition
     {
         left,
         centre,

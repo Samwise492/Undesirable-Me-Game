@@ -2,31 +2,40 @@ using UnityEngine;
 
 public class StampTable : MonoBehaviour
 {
-    [SerializeField] private PlayerPoints playerPoints;
-    [SerializeField] private SpecificDoorBehaviour door;
+    [SerializeField]
+    private PlayerConfiguration playerConfiguration;
 
-    private Player player => FindObjectOfType<Player>();
-    private GameManager gameManager => FindObjectOfType<GameManager>();
-    private SoundManager soundHandler => FindObjectOfType<SoundManager>();
+    [Space]
+    [SerializeField]
+    private SoundManager soundHandler;
 
-    private Dialogue dialogue => GetComponent<Dialogue>();
+    [Space]
+    [SerializeField]
+    private SpecificDoorBehaviour door;
+    [SerializeField]
+    private Player player;
 
-    private bool isSealStamped, isAbleToStamp;
+    [Space]
+    [SerializeField]
+    private Dialogue stampTableDialogue;
 
-    private void Start() 
+    private bool isSealStamped;
+    private bool isAbleToStamp;
+
+    private void Start()
     {
-        dialogue.enabled = false;
+        stampTableDialogue.enabled = false;
         player.AllowMovement();
 
-        gameManager.RealStamp.onClick.AddListener(StampRealStamp);
-        gameManager.FakeStamp.onClick.AddListener(StampFakeStamp);
+        UIManager.Instance.RealStamp.onClick.AddListener(StampRealStamp);
+        UIManager.Instance.FakeStamp.onClick.AddListener(StampFakeStamp);
     }
     private void OnDestroy()
     {
-        if (gameManager)
+        if (UIManager.Instance)
         {
-            gameManager.RealStamp.onClick.RemoveAllListeners();
-            gameManager.FakeStamp.onClick.RemoveAllListeners();
+            UIManager.Instance.RealStamp.onClick.RemoveAllListeners();
+            UIManager.Instance.FakeStamp.onClick.RemoveAllListeners();
         }
     }
 
@@ -34,43 +43,56 @@ public class StampTable : MonoBehaviour
     {
         if (isAbleToStamp)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(InputData.interactionKey))
             {
                 if (isSealStamped == false)
                 {
-                    gameManager.SetWindow(GameManager.UIWindows.StampWindow);
+                    UIManager.Instance.SetWindow(UIManager.UIWindows.StampWindow);
                     player.ProhibitMovement();
 
-                    gameManager.SetCursorState(true);
+                    UIManager.Instance.SetCursorState(true);
                 }
             }
         }
     }
-    
-    private void OnTriggerStay2D() => isAbleToStamp = true;
-    private void OnTriggerExit2D() => isAbleToStamp = false;
+
+    private void OnTriggerStay2D()
+    {
+        isAbleToStamp = true;
+    }
+    private void OnTriggerExit2D()
+    {
+        isAbleToStamp = false;
+    }
 
     private void StampRealStamp()
     {
         Stamp();
-        playerPoints.AddPoints(PlayerPoints.PointsType.BadPoints, 1);
-        
+
+        PointsToAddAfterDialogue[] pointsData = new PointsToAddAfterDialogue[] { new(PlayerConfiguration.PointsType.BadPoints, 1) };
+
+        playerConfiguration.AddPoints(pointsData);
+        playerConfiguration.ChangeKey(new int[] { -1 });
+
     }
     private void StampFakeStamp()
     {
         Stamp();
-        playerPoints.AddPoints(PlayerPoints.PointsType.GoodPoints, 1);
+
+        PointsToAddAfterDialogue[] pointsData = new PointsToAddAfterDialogue[] { new(PlayerConfiguration.PointsType.GoodPoints, 1) };
+
+        playerConfiguration.AddPoints(pointsData);
     }
     private void Stamp()
     {
         isSealStamped = true;
 
-        gameManager.SetWindow(null);
-        gameManager.SetCursorState(false);
-        
+        UIManager.Instance.SetWindow(null);
+        UIManager.Instance.SetCursorState(false);
+
         soundHandler.PlaySound(SoundManager.SoundType.Stamp);
 
-        dialogue.enabled = true;
+        stampTableDialogue.enabled = true;
         door.isActivateDialogue = false;
         door.isLocked = false;
     }

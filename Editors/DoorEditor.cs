@@ -1,20 +1,27 @@
 #if UNITY_EDITOR
+using System;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(Door))]
 public class DoorEditor : Editor
 {
-    private DoorBehaviourType doorBehaviourType;
+    private SerializedProperty doorType;
 
     private SerializedProperty sceneToLoadName;
+    private SerializedProperty sceneToLoadMeta;
+
     private SerializedProperty stageToOff, stageToOn;
     private SerializedProperty teleportPosition;
     private SerializedProperty transitionSound;
 
     private void OnEnable()
     {
-        sceneToLoadName = serializedObject.FindProperty("sceneToLoadName");
+        doorType = serializedObject.FindProperty("type");
+
+        sceneToLoadName = serializedObject.FindProperty("sceneToLoadData.sceneToLoadName");
+        sceneToLoadMeta = serializedObject.FindProperty("sceneToLoadData.sceneToLoadMeta");
+
         stageToOff = serializedObject.FindProperty("stageToOff");
         stageToOn = serializedObject.FindProperty("stageToOn");
         teleportPosition = serializedObject.FindProperty("teleportPosition");
@@ -25,11 +32,15 @@ public class DoorEditor : Editor
     {
         serializedObject.Update();
 
-        doorBehaviourType = (DoorBehaviourType)EditorGUILayout.EnumPopup("Behaviour Type", doorBehaviourType);
+        EditorGUILayout.PropertyField(doorType);
 
-        switch (doorBehaviourType)
+        switch (doorType.enumValueIndex)
         {
-            case DoorBehaviourType.Normal:
+            case 2:
+                sceneToLoadName.stringValue = EditorGUILayout.TextField(sceneToLoadName.displayName, sceneToLoadName.stringValue);
+                sceneToLoadMeta.stringValue = EditorGUILayout.TextField(sceneToLoadMeta.displayName, sceneToLoadMeta.stringValue);
+                break;
+            default:
                 stageToOff.objectReferenceValue = EditorGUILayout.ObjectField(stageToOff.displayName, stageToOff.objectReferenceValue, 
                     typeof(GameObject), true);
                 stageToOn.objectReferenceValue = EditorGUILayout.ObjectField(stageToOn.displayName, stageToOn.objectReferenceValue, 
@@ -38,18 +49,9 @@ public class DoorEditor : Editor
                     teleportPosition.objectReferenceValue, typeof(Transform), true);
                 EditorGUILayout.PropertyField(transitionSound);
                 break;
-            case DoorBehaviourType.SceneLoader:
-                sceneToLoadName.stringValue = EditorGUILayout.TextField(sceneToLoadName.displayName, sceneToLoadName.stringValue);
-                break;
         }
 
         serializedObject.ApplyModifiedProperties();
-    }
-
-    public enum DoorBehaviourType
-    {
-        Normal,
-        SceneLoader
     }
 }
 #endif
