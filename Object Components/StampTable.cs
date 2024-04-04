@@ -1,7 +1,11 @@
+using System;
 using UnityEngine;
 
 public class StampTable : MonoBehaviour
 {
+    public event Action OnPlayerInteracted;
+    public event Action OnStamped;
+
     [SerializeField]
     private PlayerConfiguration playerConfiguration;
 
@@ -25,18 +29,6 @@ public class StampTable : MonoBehaviour
     private void Start()
     {
         stampTableDialogue.enabled = false;
-        player.AllowMovement();
-
-        UIManager.Instance.RealStamp.onClick.AddListener(StampRealStamp);
-        UIManager.Instance.FakeStamp.onClick.AddListener(StampFakeStamp);
-    }
-    private void OnDestroy()
-    {
-        if (UIManager.Instance)
-        {
-            UIManager.Instance.RealStamp.onClick.RemoveAllListeners();
-            UIManager.Instance.FakeStamp.onClick.RemoveAllListeners();
-        }
     }
 
     private void Update()
@@ -47,10 +39,11 @@ public class StampTable : MonoBehaviour
             {
                 if (isSealStamped == false)
                 {
-                    UIManager.Instance.SetWindow(UIManager.UIWindows.StampWindow);
                     player.ProhibitMovement();
 
                     UIManager.Instance.SetCursorState(true);
+
+                    OnPlayerInteracted?.Invoke();
                 }
             }
         }
@@ -65,7 +58,7 @@ public class StampTable : MonoBehaviour
         isAbleToStamp = false;
     }
 
-    private void StampRealStamp()
+    public void StampRealStamp()
     {
         Stamp();
 
@@ -75,7 +68,7 @@ public class StampTable : MonoBehaviour
         playerConfiguration.ChangeKey(new int[] { -1 });
 
     }
-    private void StampFakeStamp()
+    public void StampFakeStamp()
     {
         Stamp();
 
@@ -87,7 +80,6 @@ public class StampTable : MonoBehaviour
     {
         isSealStamped = true;
 
-        UIManager.Instance.SetWindow(null);
         UIManager.Instance.SetCursorState(false);
 
         soundHandler.PlaySound(SoundManager.SoundType.Stamp);
@@ -95,5 +87,7 @@ public class StampTable : MonoBehaviour
         stampTableDialogue.enabled = true;
         door.isActivateDialogue = false;
         door.isLocked = false;
+
+        OnStamped?.Invoke();
     }
 }

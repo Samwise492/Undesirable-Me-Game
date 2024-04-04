@@ -11,6 +11,9 @@ public class Door : MonoBehaviour
     public bool IsPlayerNear => isPlayerNear;
     public bool IsLoadNewDay => isLoadNewDay;
 
+    [HideInInspector]
+    public bool isAvailable;
+
     [SerializeField]
     private DoorType type;
 
@@ -31,9 +34,14 @@ public class Door : MonoBehaviour
     private bool isPlayerNear;
     private bool isLoadNewDay;
 
+    private void Start()
+    {
+        isAvailable = true;
+    }
+
     private void Update()
     {
-        if (isPlayerNear)
+        if (isPlayerNear && isAvailable)
         {
             if (UIManager.Instance.GetActiveWindow() == null)
             {

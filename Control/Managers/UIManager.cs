@@ -9,9 +9,6 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance => instance;
 
-    public Button RealStamp => realStamp;
-    public Button FakeStamp => fakeStamp;
-
     [Header("Windows")]
     [SerializeField]
     private CanvasGroup buttonWindow;
@@ -36,26 +33,19 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Transform choiceLineRoot;
 
-    [Header("Custom Windows")]
-    [SerializeField] 
-    private CanvasGroup stampWindow;
-    [SerializeField] 
-    private Button realStamp, fakeStamp;
-
     [Header("Data")]
     [SerializeField]
     private CharactersData charactersData;
 
-    private static UIManager instance;
-
+    [Header("Cursor")]
+    [SerializeField]
     private CursorManager cursor;
+
+    private static UIManager instance;
 
     private void Awake()
     {
         instance = this;
-
-        cursor = FindObjectOfType<CursorManager>(true);
-        if (cursor != null) HandleCursor();
     }
 
     public UIWindows? GetActiveWindow()
@@ -112,10 +102,6 @@ public class UIManager : MonoBehaviour
                 TurnOffAllWindows();
                 choiceWindow.alpha = 1;
                 break;
-            case UIWindows.StampWindow:
-                TurnOffAllWindows();
-                stampWindow.alpha = 1;
-                break;
             case null:
                 TurnOffAllWindows();
                 break;
@@ -138,8 +124,7 @@ public class UIManager : MonoBehaviour
 
     public void SetCursorState(bool state)
     {
-        if (cursor != null)
-            cursor.gameObject.SetActive(state);
+       cursor.gameObject.SetActive(state);
     }
 
     public void ClearDialogueTextField()
@@ -152,28 +137,12 @@ public class UIManager : MonoBehaviour
         buttonWindow.alpha = 0;
         dialogueWindow.alpha = 0;
         choiceWindow.alpha = 0;
-        stampWindow.alpha = 0;
-    }
-
-    private void HandleCursor()
-    {
-        if (SceneManager.GetActiveScene().name != "Main Menu")
-        {
-            cursor.gameObject.SetActive(false);
-            cursor.isMute = true;
-        }
-        else
-        {
-            cursor.gameObject.SetActive(true);
-            cursor.isMute = false;
-        }
     }
 
     public enum UIWindows
     {
         DialogueWindow,
         ButtonWindow,
-        ChoiceWindow,
-        StampWindow
+        ChoiceWindow
     }
 }

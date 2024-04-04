@@ -7,28 +7,43 @@ public class CurseController : MonoBehaviour
 
     private System.Random randomiser = new System.Random();
 
-    [Header("Debug")]
-    [SerializeField]
-    private bool isDebugCurseState;
+    public bool isEternalCurse;
+
+    private void Start()
+    {
+        if (isEternalCurse)
+        {
+            CurseForever();
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (isEternalCurse)
+        {
+            CurseForever();
+        }
+    }
 
     public void RandomiseCurse()
     {
-        int randomValue = randomiser.Next(4);
-
-        if (randomValue == 1)
+        if (!isEternalCurse)
         {
-            OnCursed?.Invoke(true);
-        }
-        else
-        {
-            OnCursed?.Invoke(false);
-        }
+            int randomValue = randomiser.Next(4);
 
-        // Debug
-
-        if (isDebugCurseState)
-        {
-            OnCursed?.Invoke(true);
+            if (randomValue == 1)
+            {
+                OnCursed?.Invoke(true);
+            }
+            else
+            {
+                OnCursed?.Invoke(false);
+            }
         }
+    }
+
+    private void CurseForever()
+    {
+        OnCursed?.Invoke(true);
     }
 }

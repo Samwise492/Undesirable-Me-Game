@@ -109,7 +109,7 @@ public class Dialogue : MonoBehaviour
 
     private void ChangeDialogueLine()
     {
-        if (dialogueLineIndex + 1 == currentDialogue.Length)
+        if (dialogueLineIndex + 1 == currentDialogue.Length) // dialogueLineIndex + 1
         {
             UIManager.Instance.SetWindow(null);
 

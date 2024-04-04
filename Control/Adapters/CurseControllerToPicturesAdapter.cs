@@ -33,19 +33,4 @@ public class CurseControllerToPicturesAdapter : MonoBehaviour
             picture.isCursed = isCursed;
         }
     }
-
-    private void Update()
-    {
-        if (curseController)
-        {
-            //foreach (LivingPicture livingPicture in livingPictures)
-            //{
-            //    livingPicture.isCursed = curseController.IsWorldCursed;
-            //}
-            //foreach (Picture picture in pictures)
-            //{
-            //    picture.isCursed = curseController.IsWorldCursed;
-            //}
-        }
-    }
 }

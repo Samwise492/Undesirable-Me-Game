@@ -1,27 +1,25 @@
 using System.Collections;
 using UnityEngine;
 
-public class TriggerToActivateAnimation : MonoBehaviour
+public abstract class DialogueTrigger : MonoBehaviour, ITrigger
 {
-    [Header("Triggers")]
-    [Tooltip("Turn off after it's finished")]
+    [Tooltip("Turn off dialogue trigger after it's finished")]
     [SerializeField]
-    private bool isTurnOffAfterFinish;
-    [SerializeField]
-    private Dialogue dialogueTrigger;
+    internal bool isTurnOffAfterFinish;
 
-    [Header("Manipulated object")]
     [SerializeField]
-    private Animation objectWithAnimation;
+	internal Dialogue dialogueTrigger;
 
-    private void Start()
+    protected virtual void Start()
     {
         dialogueTrigger.OnDialogueFinished += StartChecking;
     }
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         dialogueTrigger.OnDialogueFinished -= StartChecking;
     }
+
+    public abstract void TriggerAction();
 
     private void StartChecking(DialogueData dialogueData)
     {
@@ -37,9 +35,11 @@ public class TriggerToActivateAnimation : MonoBehaviour
             if (UIManager.Instance.GetActiveWindow() == null)
             {
                 if (isTurnOffAfterFinish)
+                {
                     dialogueTrigger.enabled = false;
+                }
 
-                objectWithAnimation.Play();
+                TriggerAction();
 
                 yield break;
             }

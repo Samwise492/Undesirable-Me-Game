@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -19,53 +20,50 @@ public class LivingPicture : MonoBehaviour
     [SerializeField]
     private Transform rightBorder;
 
-    [Space][SerializeField] 
-    private Transform cursedStatesNest;
+    [Space]
+    [SerializeField]
+    private PictureMarker[] cursedPictures;
     [SerializeField] 
     private SpriteRenderer idleState;
 
-    private SpriteRenderer[] cursedStates = new SpriteRenderer[3];
-
-    private void Awake()
+    private void OnEnable()
     {
-        for (int i = 0; i < cursedStatesNest.childCount; i++)
-        {
-            cursedStatesNest.GetChild(i).gameObject.SetActive(true);
-            cursedStates[i] = gameObject.transform.GetChild(0).GetChild(i).gameObject.GetComponent<SpriteRenderer>();
-            cursedStatesNest.GetChild(i).gameObject.SetActive(false);
-        }
+        StartCoroutine(CheckForCurse());
     }
-    private void OnEnable() => StartCoroutine(CheckForCurse());
 
     private void Curse()
     {
         idleState.gameObject.SetActive(false);
-        cursedStatesNest.gameObject.SetActive(true);
 
         StartCoroutine(PlayCursedAnimation());
     }
     private void BackToIdle()
     {   
         idleState.gameObject.SetActive(true);
-        cursedStatesNest.gameObject.SetActive(false);
+
+        RefreshCursedImages();
     }
 
-    private void TurnOffCursedImages()
+    private void RefreshCursedImages()
     {
-        foreach (SpriteRenderer image in cursedStates)
+        foreach (PictureMarker picture in cursedPictures)
         {
-            image.gameObject.SetActive(false);
+            picture.Picture.gameObject.SetActive(false);
         }
     }
 
     private IEnumerator CheckForCurse()
     {
         yield return new WaitForEndOfFrame();
-        
+
         if (isCursed)
+        {
             Curse();
+        }
         else
+        {
             BackToIdle();
+        }
         
         yield break;
     }
@@ -77,21 +75,23 @@ public class LivingPicture : MonoBehaviour
             switch (playerPosition)
             {
                 case PlayerPosition.left:
-                    TurnOffCursedImages();
-                    cursedStates[0].gameObject.SetActive(true);
+                    RefreshCursedImages();
+                    cursedPictures[0].Picture.gameObject.SetActive(true);
                     break;
                 case PlayerPosition.centre:
-                    TurnOffCursedImages();
-                    cursedStates[1].gameObject.SetActive(true);
+                    RefreshCursedImages();
+                    cursedPictures[1].Picture.gameObject.SetActive(true);
                     break;
                 case PlayerPosition.right:
-                    TurnOffCursedImages();
-                    cursedStates[2].gameObject.SetActive(true);
+                    RefreshCursedImages();
+                    cursedPictures[2].Picture.gameObject.SetActive(true);
                     break;
             }
 
             if (!isCursed)
+            {
                 yield break;
+            }
                 
             yield return new WaitForSeconds(1);
         }
@@ -102,5 +102,18 @@ public class LivingPicture : MonoBehaviour
         left,
         centre,
         right
+    }
+
+    [Serializable]
+    private class PictureMarker
+    {
+        public PlayerPosition Position => position;
+        public SpriteRenderer Picture => picture;
+
+        [Tooltip("Position relative to player")]
+        [SerializeField]
+        private PlayerPosition position;
+        [SerializeField]
+        private SpriteRenderer picture;
     }
 }

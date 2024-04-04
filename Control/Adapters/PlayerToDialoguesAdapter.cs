@@ -12,8 +12,8 @@ public class PlayerToDialoguesAdapter : MonoBehaviour
     {
         foreach (Dialogue dialogue in dialoguesOnScene)
         {
-            dialogue.OnDialogueStarted += ProhibitMovement;
             dialogue.OnDialogueFinished += AllowMovement;
+            dialogue.OnDialogueStarted += ProhibitMovement;
         }
     }
     private void OnDisable()
@@ -30,10 +30,15 @@ public class PlayerToDialoguesAdapter : MonoBehaviour
 
     private void AllowMovement(DialogueData dialogueData)
     {
-        StartCoroutine(AppendDelay());
+        StartCoroutine(ProcessAllowment());
     }
 
-    private IEnumerator AppendDelay()
+    private void ProhibitMovement(DialogueData dialogueData)
+    {
+        StartCoroutine(ProcessProhibition());
+    }
+
+    private IEnumerator ProcessAllowment()
     {
         yield return new WaitForSeconds(0.2f);
 
@@ -45,8 +50,12 @@ public class PlayerToDialoguesAdapter : MonoBehaviour
         yield break;
     }
 
-    private void ProhibitMovement(DialogueData dialogueData)
+    private IEnumerator ProcessProhibition()
     {
+        yield return new WaitForSeconds(0.3f);
+
         player.ProhibitMovement();
+
+        yield break;
     }
 }

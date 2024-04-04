@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
@@ -9,9 +10,7 @@ public class CursorManager : MonoBehaviour
 
     private void Start()
     {
-        DontDestroyOnLoad(this);
-
-        Cursor.visible = false;
+        Init();
     }
     
     private void Update()
@@ -23,5 +22,21 @@ public class CursorManager : MonoBehaviour
         {
             audioSource.Play();
         } 
+    }
+
+    private void Init()
+    {
+        Cursor.visible = false;
+
+        if (SceneManager.GetActiveScene().name != "Main Menu")
+        {
+            gameObject.SetActive(false);
+            isMute = true;
+        }
+        else
+        {
+            gameObject.SetActive(true);
+            isMute = false;
+        }
     }
 }
