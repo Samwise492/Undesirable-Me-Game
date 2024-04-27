@@ -1,8 +1,8 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -18,7 +18,7 @@ public class UIManager : MonoBehaviour
     private CanvasGroup choiceWindow;
 
     [Header("Dialogue UI")]
-    [SerializeField] 
+    [SerializeField]
     private Text dialogueTextField;
 
     [Space]
@@ -51,7 +51,7 @@ public class UIManager : MonoBehaviour
     public UIWindows? GetActiveWindow()
     {
         if (buttonWindow.alpha == 1)
-        { 
+        {
             return UIWindows.ButtonWindow;
         }
         else if (dialogueWindow.alpha == 1)
@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
 
         return null;
     }
-    
+
     public void CreateChoiceLines(int quantity, List<string> titles, List<Action> actions)
     {
         for (int i = 0; i < quantity; i++)
@@ -93,14 +93,17 @@ public class UIManager : MonoBehaviour
             case UIWindows.DialogueWindow:
                 TurnOffAllWindows();
                 dialogueWindow.alpha = 1;
+                dialogueWindow.interactable = true;
                 break;
             case UIWindows.ButtonWindow:
                 TurnOffAllWindows();
                 buttonWindow.alpha = 1;
+                buttonWindow.interactable = true;
                 break;
             case UIWindows.ChoiceWindow:
                 TurnOffAllWindows();
                 choiceWindow.alpha = 1;
+                choiceWindow.interactable = true;
                 break;
             case null:
                 TurnOffAllWindows();
@@ -109,22 +112,26 @@ public class UIManager : MonoBehaviour
     }
     public void SetDialogueWindow(DialogueData data, int textLineIndex)
     {
-        dialogueTextField.text = data.Dialogue[textLineIndex];
+        //dialogueTextField.text = data.Dialogue[textLineIndex];
+        dialogueTextField.text = "";
+        dialogueTextField.DOText(data.Dialogue[textLineIndex], 1.5f, true, ScrambleMode.None);
 
         Sprite emotionSprite = charactersData.GetEmotionSprite(data.Emotions[textLineIndex].character, data.Emotions[textLineIndex].mood);
-        
+
         if (emotionSprite != null)
         {
             characterIcon.sprite = emotionSprite;
             characterIconFrame.gameObject.SetActive(true);
         }
         else
+        {
             characterIconFrame.gameObject.SetActive(false);
+        }
     }
 
     public void SetCursorState(bool state)
     {
-       cursor.gameObject.SetActive(state);
+        cursor.gameObject.SetActive(state);
     }
 
     public void ClearDialogueTextField()
@@ -137,6 +144,10 @@ public class UIManager : MonoBehaviour
         buttonWindow.alpha = 0;
         dialogueWindow.alpha = 0;
         choiceWindow.alpha = 0;
+
+        buttonWindow.interactable = false;
+        dialogueWindow.interactable = false;
+        choiceWindow.interactable = false;
     }
 
     public enum UIWindows

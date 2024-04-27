@@ -16,5 +16,7 @@ public class TriggerToActivateDoorByDialogue : DialogueTrigger
     public override void TriggerAction()
     {
         door.enabled = true;
+
+        EndTrigger();
     }
 }

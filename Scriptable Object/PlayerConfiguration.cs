@@ -10,12 +10,12 @@ public class PlayerConfiguration : ScriptableObject
     public int GoodPoints => goodPoints;
     public int DeathPoints => deathPoints;
 
-    public bool isKeyMinus1;
-    public bool isKey0;
-    public bool isKey1;
-    public bool isKey2;
-    public bool isKey3;
-    public bool isKey4;
+    public bool isKeyMinus_1;
+    public bool isKey_0;
+    public bool isKey_1;
+    public bool isKey_2;
+    public bool isKey_3;
+    public bool isKey_4;
 
     [Space][SerializeField]
     private int badPoints;
@@ -24,6 +24,26 @@ public class PlayerConfiguration : ScriptableObject
     [SerializeField]
     private int deathPoints;
 
+    public bool CheckKey(int key)
+    {
+        switch (key)
+        {
+            case -1:
+                return isKeyMinus_1;
+            case 0:
+                return isKey_0;
+            case 1:
+                return isKey_1;
+            case 2:
+                return isKey_2;
+            case 3:
+                return isKey_3;
+            case 4:
+                return isKey_4;
+        }
+
+        return false;
+    }
     public void ChangeKey(int[] numbers)
     {
         for (int i = 0; i < numbers.Length; i++)
@@ -31,22 +51,22 @@ public class PlayerConfiguration : ScriptableObject
             switch (numbers[i])
             {
                 case -1:
-                    isKeyMinus1 = true;
+                    isKeyMinus_1 = true;
                     break;
                 case 0:
-                    isKey0 = true;
+                    isKey_0 = true;
                     break;
                 case 1:
-                    isKey1 = true;
+                    isKey_1 = true;
                     break;
                 case 2:
-                    isKey2 = true;
+                    isKey_2 = true;
                     break;
                 case 3:
-                    isKey3 = true;
+                    isKey_3 = true;
                     break;
                 case 4:
-                    isKey4 = true;
+                    isKey_4 = true;
                     break;
             }
         }

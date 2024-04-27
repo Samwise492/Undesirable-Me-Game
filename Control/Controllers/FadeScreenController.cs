@@ -1,49 +1,79 @@
+using DG.Tweening;
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FadeScreenController : MonoBehaviour
 {
     public event Action OnStartFading;
-    public event Action<PackedSceneData> OnEndFading;
+    public event Action OnFading;
+    public event Action OnEndFading;
+    public event Action<PackedSceneData> OnPreparedForNewScene;
 
-    [SerializeField]
-    private float fadeSpeed;
     [SerializeField]
     private Image fadingScreen;
 
+    [Space]
+    [SerializeField]
+    private float speed;
+    [SerializeField]
+    private float pauseTime;
+
     private PackedSceneData sceneToLoadAfterData;
 
-    public void FadeScreen(PackedSceneData sceneToLoadAfterData)
+    public void FadeScreenInAndOut()
+    {
+        fadingScreen.gameObject.SetActive(true);
+        Fade(false);
+    }
+
+    public void FadeScreenIntoNewScene(PackedSceneData sceneToLoadAfterData)
     {
         this.sceneToLoadAfterData = sceneToLoadAfterData;
 
         fadingScreen.gameObject.SetActive(true);
-
-        StartCoroutine(ProcessFadeScreen());
+        Fade(true);
     }
 
-    private IEnumerator ProcessFadeScreen()
+    private void Fade(bool isOnlyFadeIn)
     {
-        yield return new WaitForSeconds(1);
-
         OnStartFading?.Invoke();
 
-        Color varToDecrease = fadingScreen.color;
+        Color fadedColour = new(fadingScreen.color.r, fadingScreen.color.g, fadingScreen.color.b, 0);
+        Color dimmedColour = new(fadingScreen.color.r, fadingScreen.color.g, fadingScreen.color.b, 1);
 
-        while (true)
+        Sequence seq = DOTween.Sequence();
+
+        Tween show = DOTween.To(() => fadingScreen.color, x => fadingScreen.color = x, dimmedColour, speed);
+        Tween hide = DOTween.To(() => fadingScreen.color, x => fadingScreen.color = x, fadedColour, speed);
+
+        if (isOnlyFadeIn)
         {
-            varToDecrease.a += fadeSpeed;
-            fadingScreen.color = varToDecrease;
-            yield return new WaitForSeconds(0.15f);
+            Tween customShow = DOTween.To(() => fadingScreen.color, x => fadingScreen.color = x, dimmedColour, speed);
 
-            if (fadingScreen.color.a >= 1)
-            {
-                OnEndFading?.Invoke(sceneToLoadAfterData);
+            customShow.onComplete += () => OnFading?.Invoke();
 
-                yield break;
-            }
+            customShow.Play().onComplete += EndFading;
         }
+        else
+        {
+            show.onComplete += () => OnFading?.Invoke();
+
+            seq.Append(show);
+            seq.AppendInterval(pauseTime);
+            seq.Append(hide).onComplete += EndFading;
+        }
+    }
+
+    private void EndFading()
+    {
+        if (sceneToLoadAfterData != null)
+        {
+            OnPreparedForNewScene?.Invoke(sceneToLoadAfterData);
+        }
+
+        sceneToLoadAfterData = null;
+
+        OnEndFading?.Invoke();
     }
 }

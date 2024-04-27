@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 public class CheatSystem : MonoBehaviour
@@ -5,6 +6,7 @@ public class CheatSystem : MonoBehaviour
     [Header("Player")]
     [SerializeField]
     private bool isPlayerCustomisable;
+    [ShowIf("isPlayerCustomisable")]
     [SerializeField]
     private float customPlayerSpeed;
 
@@ -17,8 +19,16 @@ public class CheatSystem : MonoBehaviour
     private bool isPointsReset;
     [SerializeField] 
     private PlayerConfiguration playerConfiguration;
+
+    [Header("Dialogue")]
+    [SerializeField]
+    private bool isDialogueCustomisable;
+    [ShowIf("isDialogueCustomisable")]
+    [SerializeField]
+    private float customDialogueDelay;
     
     private SpecificDoorBehaviour[] doors;
+    private BaseDialogue[] dialogues;
 
     private bool areDoorsUnlocked_atStart;
 
@@ -54,6 +64,16 @@ public class CheatSystem : MonoBehaviour
             if (isPlayerCustomisable)
             {
                 FindObjectOfType<Player>().moveSpeed = customPlayerSpeed;
+            }
+
+            if (isDialogueCustomisable)
+            {
+                dialogues = FindObjectsOfType<BaseDialogue>();
+
+                foreach (BaseDialogue dialogue in dialogues)
+                {
+                    dialogue.delayTime = customDialogueDelay;
+                }
             }
         }
     }

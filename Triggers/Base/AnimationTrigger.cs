@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class AnimationTrigger : MonoBehaviour, ITrigger
+public abstract class AnimationTrigger : BaseTrigger
 {
     [SerializeField]
     internal AnimationEventDispatcher animationTrigger;
@@ -14,10 +14,8 @@ public abstract class AnimationTrigger : MonoBehaviour, ITrigger
         animationTrigger.OnAnimationCompleted.RemoveListener(CheckAnimation);
     }
 
-    public abstract void TriggerAction();
-
     private void CheckAnimation(string completedAnimationName)
     {
-        TriggerAction();
+        CheckTriggerBehaviour();
     }
 }

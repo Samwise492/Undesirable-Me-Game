@@ -1,27 +1,25 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class DialogueTrigger : MonoBehaviour, ITrigger
+public abstract class DialogueTrigger : BaseTrigger
 {
     [Tooltip("Turn off dialogue trigger after it's finished")]
     [SerializeField]
     internal bool isTurnOffAfterFinish;
 
     [SerializeField]
-	internal Dialogue dialogueTrigger;
+    internal BaseDialogue dialogueTrigger;
 
     protected virtual void Start()
     {
-        dialogueTrigger.OnDialogueFinished += StartChecking;
+        dialogueTrigger.OnEnd += StartChecking;
     }
     protected virtual void OnDestroy()
     {
-        dialogueTrigger.OnDialogueFinished -= StartChecking;
+        dialogueTrigger.OnEnd -= StartChecking;
     }
 
-    public abstract void TriggerAction();
-
-    private void StartChecking(DialogueData dialogueData)
+    private void StartChecking()
     {
         StartCoroutine(CheckForDialogueWindowClosure());
     }
@@ -39,7 +37,7 @@ public abstract class DialogueTrigger : MonoBehaviour, ITrigger
                     dialogueTrigger.enabled = false;
                 }
 
-                TriggerAction();
+                CheckTriggerBehaviour();
 
                 yield break;
             }

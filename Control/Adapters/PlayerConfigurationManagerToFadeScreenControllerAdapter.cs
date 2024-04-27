@@ -21,6 +21,6 @@ public class PlayerConfigurationManagerToFadeScreenControllerAdapter : MonoBehav
         PackedSceneData endSceneData = new();
         endSceneData.sceneToLoadName = GameManager.EndSceneName;
 
-        fadeScreenController.FadeScreen(endSceneData);
+        fadeScreenController.FadeScreenIntoNewScene(endSceneData);
     }
 }

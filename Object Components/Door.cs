@@ -5,11 +5,13 @@ public class Door : MonoBehaviour
 {
     public event Action OnStageChanged;
     public event Action OnTeleport;
+    public event Action OnChangeStageWithFade;
 
     public Transform TeleportPosition => teleportPosition;
     public SoundManager.SoundType TransitionSound => transitionSound;
     public bool IsPlayerNear => isPlayerNear;
     public bool IsLoadNewDay => isLoadNewDay;
+    public bool IsFadingRequired => isFadingRequired;
 
     [HideInInspector]
     public bool isAvailable;
@@ -31,6 +33,10 @@ public class Door : MonoBehaviour
     [SerializeField]
     private SoundManager.SoundType transitionSound;
 
+    [Space]
+    [SerializeField]
+    private bool isFadingRequired;
+
     private bool isPlayerNear;
     private bool isLoadNewDay;
 
@@ -47,11 +53,25 @@ public class Door : MonoBehaviour
             {
                 if (type == DoorType.Teleport)
                 {
-                    SwitchStage();
+                    if (!isFadingRequired)
+                    {
+                        SwitchStage();
+                    }
+                    else
+                    {
+                        OnChangeStageWithFade?.Invoke();
+                    }
                 }
                 else if (Input.GetKeyUp(InputData.interactionKey))
                 {
-                    SwitchStage();
+                    if (!isFadingRequired)
+                    {
+                        SwitchStage();
+                    }
+                    else
+                    {
+                        OnChangeStageWithFade?.Invoke();
+                    }
                 }
             }
         }
@@ -60,6 +80,10 @@ public class Door : MonoBehaviour
     private void OnTriggerStay2D() => isPlayerNear = true;
     private void OnTriggerExit2D() => isPlayerNear = false;
 
+    public void AskForFading()
+    {
+        OnChangeStageWithFade?.Invoke();
+    }
     public void SwitchStage()
     {
         OnStageChanged?.Invoke();

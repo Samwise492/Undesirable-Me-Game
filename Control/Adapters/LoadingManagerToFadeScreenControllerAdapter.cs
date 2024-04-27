@@ -8,14 +8,14 @@ public class LoadingManagerToFadeScreenControllerAdapter : MonoBehaviour
 
     private void OnEnable()
     {
-        fadeScreenController.OnEndFading += LoadScene;
+        fadeScreenController.OnPreparedForNewScene += LoadScene;
     }
 
     private void OnDisable()
     {
         if (fadeScreenController != null)
         {
-            fadeScreenController.OnEndFading -= LoadScene;
+            fadeScreenController.OnPreparedForNewScene -= LoadScene;
         }
     }
 

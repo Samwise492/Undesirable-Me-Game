@@ -9,5 +9,7 @@ public class TriggerToActivateAnimationByDialogue : DialogueTrigger
     public override void TriggerAction()
     {
         objectWithAnimation.Play();
+
+        EndTrigger();
     }
 }

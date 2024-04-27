@@ -4,7 +4,7 @@ public class TriggerToActivateDialogueByDialogue : DialogueTrigger
 {
     [Header("Manipulated object")]
     [SerializeField]
-    private Dialogue dialogue;
+    private BaseDialogue dialogue;
     [SerializeField]
     private ChoiceMaker choiceMaker;
 
@@ -23,5 +23,7 @@ public class TriggerToActivateDialogueByDialogue : DialogueTrigger
         {
             choiceMaker.enabled = true;
         }
+
+        EndTrigger();
     }
 }

@@ -21,7 +21,7 @@ public class StampTable : MonoBehaviour
 
     [Space]
     [SerializeField]
-    private Dialogue stampTableDialogue;
+    private BaseDialogue stampTableDialogue;
 
     private bool isSealStamped;
     private bool isAbleToStamp;

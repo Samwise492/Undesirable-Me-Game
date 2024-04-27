@@ -3,7 +3,7 @@ using UnityEngine;
 public class StampWindowControllerToDialogueAdapter : MonoBehaviour
 {
 	[SerializeField]
-	private Dialogue dialogue;
+	private BaseDialogue dialogue;
 
 	private StampWindowController stampWindowController => FindObjectOfType<StampWindowController>();
 
@@ -29,7 +29,7 @@ public class StampWindowControllerToDialogueAdapter : MonoBehaviour
     {
         if (state)
         {
-            dialogue.PlayDialogue();
+            dialogue.Play();
         }
     }
 

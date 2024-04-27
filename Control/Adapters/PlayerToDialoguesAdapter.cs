@@ -1,16 +1,15 @@
 using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 public class PlayerToDialoguesAdapter : MonoBehaviour
 {
-	private Player player => FindObjectOfType<Player>();
+    private Player player => FindObjectOfType<Player>();
 
-    private Dialogue[] dialoguesOnScene => FindObjectsOfType<Dialogue>(true);
+    private BaseDialogue[] dialoguesOnScene => FindObjectsOfType<BaseDialogue>(true);
 
     private void OnEnable()
     {
-        foreach (Dialogue dialogue in dialoguesOnScene)
+        foreach (BaseDialogue dialogue in dialoguesOnScene)
         {
             dialogue.OnDialogueFinished += AllowMovement;
             dialogue.OnDialogueStarted += ProhibitMovement;
@@ -18,7 +17,7 @@ public class PlayerToDialoguesAdapter : MonoBehaviour
     }
     private void OnDisable()
     {
-        foreach (Dialogue dialogue in dialoguesOnScene)
+        foreach (BaseDialogue dialogue in dialoguesOnScene)
         {
             if (dialogue && player)
             {
@@ -42,7 +41,7 @@ public class PlayerToDialoguesAdapter : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
 
-        if (UIManager.Instance.GetActiveWindow() != UIManager.UIWindows.ChoiceWindow && dialoguesOnScene.All(x => x.isBusyWithSequence != true))
+        if (UIManager.Instance.GetActiveWindow() != UIManager.UIWindows.ChoiceWindow)
         {
             player.AllowMovement();
         }
@@ -52,7 +51,7 @@ public class PlayerToDialoguesAdapter : MonoBehaviour
 
     private IEnumerator ProcessProhibition()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
 
         player.ProhibitMovement();
 

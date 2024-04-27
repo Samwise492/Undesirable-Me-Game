@@ -18,7 +18,7 @@ public class LoadingManager : MonoBehaviour
     private PackedSceneData receivedData;
     private Scene currentScene;
 
-    private string bootTag = "boot";
+    private readonly string bootTag = "boot";
 
     private static LoadingManager instance;
 

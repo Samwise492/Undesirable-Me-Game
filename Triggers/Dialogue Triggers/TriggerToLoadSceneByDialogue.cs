@@ -16,15 +16,12 @@ public class TriggerToLoadSceneByDialogue : DialogueTrigger
     [SerializeField]
     private PackedSceneData sceneToLoadData;
 
-    [Header("System")]
-    [SerializeField]
-    private bool isFadeBeforeLoading;
     [SerializeField]
     private FadeScreenController fadeScreenController;
 
     protected override void Start()
     {
-        if (isFadeBeforeLoading)
+        if (isFadeBeforeSceneLoad)
         {
             dialogueTrigger.OnDialogueFinished += FadeScreen;
         }
@@ -48,7 +45,7 @@ public class TriggerToLoadSceneByDialogue : DialogueTrigger
     {
         if (dataToCheck.Contains(eventArg))
         {
-            fadeScreenController.FadeScreen(sceneToLoadData);
+            fadeScreenController.FadeScreenIntoNewScene(sceneToLoadData);
         }
     }
 

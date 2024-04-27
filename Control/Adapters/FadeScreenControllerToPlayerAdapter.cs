@@ -13,6 +13,8 @@ public class FadeScreenControllerToPlayerAdapter : MonoBehaviour
     private void OnDisable()
     {
         if (controller && player)
-        controller.OnStartFading -= player.ProhibitMovement;
+        {
+            controller.OnStartFading -= player.ProhibitMovement;
+        }
     }
 }

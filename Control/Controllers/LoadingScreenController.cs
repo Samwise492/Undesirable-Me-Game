@@ -24,14 +24,13 @@ public class LoadingScreenController : MonoBehaviour
     {
         fadeCanvas.alpha = 0f;
 
-
-        fadeText.OnFadeEnded += RaiseEvent;
-        fadeText.OnFade += ShowCanvas;
+        fadeText.OnFadingEnded += RaiseEvent;
+        fadeText.OnFadingStarted += ShowCanvas;
     }
     private void OnDestroy()
     {
-		fadeText.OnFadeEnded -= RaiseEvent;
-        fadeText.OnFade -= ShowCanvas;
+		fadeText.OnFadingEnded -= RaiseEvent;
+        fadeText.OnFadingStarted -= ShowCanvas;
     }
 
     public void ShowLoadingTitle(string text)

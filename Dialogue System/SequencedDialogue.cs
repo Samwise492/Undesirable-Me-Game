@@ -1,56 +1,39 @@
+using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SequencedDialogue : MonoBehaviour
+public class SequencedDialogue : BaseDialogue
 {
-    public event Action OnProcessingDelay;
-    public event Action OnDelayProcessed;
-
-    [SerializeField]
-    private bool isAutoPlaySequence;
-
-    [Space]
     [SerializeField]
     private List<SequencedDialogueData> sequence;
 
     [Header("Components")]
     [SerializeField]
-    private Dialogue dialogue;
-    [SerializeField]
     private ChoiceMaker choiceMaker;
-
-    [Header("System")]
-    [SerializeField]
-    private float delayTime;
 
     private bool isInited;
     private int currentSequenceIndex;
 
     private List<DialogueData> history = new();
 
-    private void Awake()
+    protected override void Start()
     {
-        dialogue.OnDialogueStart += InitSequence;
-        dialogue.OnDialogueFinished += ProcessSequence;
+        base.Start();
+
+        OnDialogueFinished += ProcessSequence;
         choiceMaker.OnChoiceMade += PlayDialogueAfterChoice;
-
-        if (isAutoPlaySequence)
-        {
-            dialogue.isAutoPlayDialogue = false;
-
-            InitSequence();
-        }
     }
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
-        dialogue.OnDialogueStart -= InitSequence;
-        dialogue.OnDialogueFinished -= ProcessSequence;
+        base.OnDestroy();
+
+        OnDialogueFinished -= ProcessSequence;
         choiceMaker.OnChoiceMade -= PlayDialogueAfterChoice;
     }
 
-    private void InitSequence()
+    public override void Play()
     {
         if (!isInited)
         {
@@ -66,15 +49,13 @@ public class SequencedDialogue : MonoBehaviour
     }
     private void ProcessSequence()
     {
-        dialogue.isBusyWithSequence = true;
-
         if (currentSequenceIndex < sequence.Count)
         {
             CheckForDelay(sequence[currentSequenceIndex]);
         }
         else
         {
-            dialogue.isBusyWithSequence = false;
+            NotifyEnd();
         }
 
         currentSequenceIndex++;
@@ -104,7 +85,17 @@ public class SequencedDialogue : MonoBehaviour
             {
                 if (history.Contains(data.RequiredData))
                 {
-                    SetDialogue(data.DialogueData);
+                    if (data.IsKeyRequired)
+                    {
+                        if (playerConfiguration.CheckKey(data.RequiredKey))
+                        {
+                            SetNewDialogue(data.DialogueData);
+                        }
+                    }
+                    else
+                    {
+                        SetNewDialogue(data.DialogueData);
+                    }
                 }
                 else
                 {
@@ -115,21 +106,35 @@ public class SequencedDialogue : MonoBehaviour
             }
             else
             {
-                SetDialogue(data.DialogueData);
+                if (data.IsKeyRequired)
+                {
+                    if (playerConfiguration.CheckKey(data.RequiredKey))
+                    {
+                        SetNewDialogue(data.DialogueData);
+                    }
+                    else
+                    {
+                        NotifyEnd();
+                    }
+                }
+                else
+                {
+                    SetNewDialogue(data.DialogueData);
+                }
             }
         }
     }
 
-    private void SetDialogue(DialogueData dialogueData)
+    private void SetNewDialogue(DialogueData dialogueData)
     {
-        dialogue.SetDialogueAndPlay(dialogueData);
+        PlayDialogue(dialogueData);
 
         RememberHistory(dialogueData);
     }
 
     private void PlayDialogueAfterChoice(DialogueData dialogueData)
     {
-        SetDialogue(dialogueData);
+        SetNewDialogue(dialogueData);
     }
 
     private void RememberHistory(DialogueData dataToRemember)
@@ -139,13 +144,9 @@ public class SequencedDialogue : MonoBehaviour
 
     private IEnumerator ProcessDelay(SequencedDialogueData data)
     {
-        OnProcessingDelay?.Invoke();
-
-        yield return new WaitForSeconds(delayTime);
+        yield return new WaitForSeconds(data.DelayTime);
 
         CheckForAction(data);
-
-        OnDelayProcessed?.Invoke();
 
         yield break;
     }
@@ -156,21 +157,33 @@ public class SequencedDialogueData
 {
     public DialogueData DialogueData => dialogueData;
     public SequenceDialogueDataType Type => type;
-    public bool IsDelayBeforeIt => isDelayBeforeIt;
     public DialogueData RequiredData => requiredData;
+    public bool IsDelayBeforeIt => isDelayBeforeIt;
+    public float DelayTime => delayTime;
+    public bool IsKeyRequired => isKeyRequired;
+    public int RequiredKey => requiredKey;
 
     [SerializeField]
     private SequenceDialogueDataType type;
 
+    [Header("Delay")]
     [SerializeField]
     private bool isDelayBeforeIt;
+    [SerializeField]
+    [Tooltip("Before this dialogue starts")]
+    private float delayTime;
 
-    [Header("For Dialogue")]
+    [Header("Dialogue")]
     [SerializeField]
     private DialogueData dialogueData;
     [Tooltip("If it's not null, we play 'dialogueData' only after this 'requiredData'")]
     [SerializeField]
     private DialogueData requiredData;
+
+    [SerializeField]
+    private bool isKeyRequired;
+    [SerializeField]
+    private int requiredKey;
 }
 
 public enum SequenceDialogueDataType

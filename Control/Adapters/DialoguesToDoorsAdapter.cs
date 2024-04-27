@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class DialoguesToDoorsAdapter : MonoBehaviour
 {
-    private Dialogue[] dialogues => FindObjectsOfType<Dialogue>(true);
+    private BaseDialogue[] dialogues => FindObjectsOfType<BaseDialogue>(true);
     private Door[] doors => FindObjectsOfType<Door>(true);
 
     private void OnEnable()
     {
-        foreach (Dialogue dialogue in dialogues)
+        foreach (BaseDialogue dialogue in dialogues)
         {
             dialogue.OnDialogueFinished += AppendDelay;
         }
     }
     private void OnDisable()
     {
-        foreach (Dialogue dialogue in dialogues)
+        foreach (BaseDialogue dialogue in dialogues)
         {
             dialogue.OnDialogueFinished -= AppendDelay;
         }

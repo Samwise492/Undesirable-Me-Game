@@ -10,7 +10,7 @@ public class SpecificDoorBehaviour : MonoBehaviour
     public bool isActivateDialogue;
 
     [SerializeField]
-    private Dialogue dialogue;
+    private BaseDialogue dialogue;
 
     private Door door => GetComponent<Door>();
 
@@ -57,14 +57,16 @@ public class SpecificDoorBehaviour : MonoBehaviour
                 else if (isLocked)
                 {
                     if (Input.GetKeyUp(InputData.interactionKey))
+                    {
                         OnTriedToOpenClosedDoor?.Invoke();
+                    }
 
                     if (isActivateDialogue)
                     {
                         isActivateDialogue = false;
                         dialogue.enabled = true;
 
-                        dialogue.PlayDialogue();
+                        dialogue.Play();
                     }
                 }
             }
@@ -74,13 +76,27 @@ public class SpecificDoorBehaviour : MonoBehaviour
     private void Unlock(DialogueData dialogueData)
     {
         isLocked = false;
-        door.SwitchStage();
+
+        SwitchStage();
 
         dialogue.OnDialogueFinished -= SwitchStage;
     }
 
     private void SwitchStage(DialogueData dialogueData)
     {
-        door.SwitchStage();
+        SwitchStage();
+    }
+
+    private void SwitchStage()
+    {
+        door.enabled = true;
+        if (door.IsFadingRequired)
+        {
+            door.AskForFading();
+        }
+        else
+        {
+            door.SwitchStage();
+        }
     }
 }

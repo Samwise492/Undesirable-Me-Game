@@ -31,7 +31,7 @@ public class SpecificDoorBehaviourEditor : Editor
         if (isActivateDialogue.boolValue == true)
         {
             dialogue.objectReferenceValue = EditorGUILayout.ObjectField(dialogue.displayName, dialogue.objectReferenceValue,
-                    typeof(Dialogue), true);
+                    typeof(BaseDialogue), true);
         }
 
         serializedObject.ApplyModifiedProperties();

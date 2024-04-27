@@ -11,7 +11,7 @@ public class TriggerToSwitchAnimationByDialogue : DialogueTrigger
 
     [Space]
     [SerializeField]
-    private Rigidbody2D rbToTurnOff;
+    private Rigidbody2D rbToOff;
 
     protected override void Start()
     {
@@ -22,9 +22,9 @@ public class TriggerToSwitchAnimationByDialogue : DialogueTrigger
             manipulatedAnimator.SetBool(boolStateName, true);
         }
 
-        if (rbToTurnOff != null)
+        if (rbToOff)
         {
-            rbToTurnOff.simulated = false;
+            rbToOff.simulated = false;
         }
     }
 
@@ -32,9 +32,11 @@ public class TriggerToSwitchAnimationByDialogue : DialogueTrigger
     {
         manipulatedAnimator.SetBool(boolStateName, false);
 
-        if (rbToTurnOff != null)
+        if (rbToOff != null)
         {
-            rbToTurnOff.simulated = true;
+            rbToOff.simulated = true;
         }
+
+        EndTrigger();
     }
 }

@@ -16,5 +16,7 @@ public class TriggerToActivateAudioSourceByDialogue : DialogueTrigger
     public override void TriggerAction()
     {
         audioSource.enabled = true;
+
+        EndTrigger();
     }
 }

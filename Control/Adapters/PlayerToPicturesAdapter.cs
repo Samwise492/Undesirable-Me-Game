@@ -15,11 +15,21 @@ public class PlayerToPicturesAdapter : MonoBehaviour
 
     private void DetectPlayerPosition(LivingPicture livingPicture)
     {
-        if (player.gameObject.transform.position.x < livingPicture.LeftBorder.position.x)
+        float playerXPosition = player.gameObject.transform.position.x;
+        float leftBorderXPosition = livingPicture.LeftBorder.position.x;
+        float rightBorderXPosition = livingPicture.LeftBorder.position.x;
+
+        if (playerXPosition < leftBorderXPosition)
+        {
             livingPicture.playerPosition = LivingPicture.PlayerPosition.left;
-        else if (player.gameObject.transform.position.x > livingPicture.LeftBorder.position.x && player.gameObject.transform.position.x < livingPicture.RightBorder.position.x)
+        }
+        else if (playerXPosition > leftBorderXPosition && playerXPosition < rightBorderXPosition)
+        {
             livingPicture.playerPosition = LivingPicture.PlayerPosition.centre;
-        else if (player.gameObject.transform.position.x > livingPicture.RightBorder.position.x)
+        }
+        else if (playerXPosition > rightBorderXPosition)
+        {
             livingPicture.playerPosition = LivingPicture.PlayerPosition.right;
+        }
     }
 }

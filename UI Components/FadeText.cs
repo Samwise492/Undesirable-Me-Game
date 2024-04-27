@@ -1,78 +1,44 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
 public class FadeText : MonoBehaviour
 {
-    public event Action OnFadeEnded;
-    public event Action OnFade;
+    public event Action OnFadingStarted;
+    public event Action OnFadingEnded;
 
-    [SerializeField] 
-    private float fadeSpeed;
-    [SerializeField] 
-    private float freezeDuration;
+    [SerializeField]
+    private float speed;
+    [SerializeField]
+    private float pauseTime;
 
     private Text textToFade => GetComponent<Text>();
-
-    private bool isIncreasing = true;
-    private bool isDecreasing = false;
 
     public void Show(string textToShow)
     {
         textToFade.color = new Color(textToFade.color.r, textToFade.color.g, textToFade.color.b, 0);
         textToFade.text = textToShow;
 
-        OnFade?.Invoke();
-
-        StartCoroutine(ProcessFading());
+        ProcessFading();
     }
 
-    private IEnumerator ProcessFading()
+    private void ProcessFading()
     {
-        Color varToDecrease = textToFade.color;
+        OnFadingStarted?.Invoke();
 
-        while (true)
-        { 
-            if (textToFade.color.a < 1 && isIncreasing)
-            {
-                varToDecrease.a += fadeSpeed;
-                textToFade.color = varToDecrease;
+        Color fadedColour = new(textToFade.color.r, textToFade.color.g, textToFade.color.b, 0);
+        Color dimmedColour = new(textToFade.color.r, textToFade.color.g, textToFade.color.b, 1);
 
-                yield return new WaitForSeconds(0.15f);
-            }
-            else 
-            {
-                isIncreasing = false;
+        Sequence seq = DOTween.Sequence();
 
-                if (isDecreasing == false)
-                {
-                    yield return new WaitForSeconds(freezeDuration);
-                }
+        Tween show = DOTween.To(() => textToFade.color, x => textToFade.color = x, dimmedColour, speed);
+        Tween hide = DOTween.To(() => textToFade.color, x => textToFade.color = x, fadedColour, speed);
 
-                isDecreasing = true;
-                
-                if (textToFade.color.a >= 0 && !isIncreasing)
-                {
-                    varToDecrease.a -= fadeSpeed;
-                    textToFade.color = varToDecrease;
-
-                    yield return new WaitForSeconds(0.15f);
-
-                    if (textToFade.color.a <= 0)
-                    {
-                        transform.parent.gameObject.SetActive(false);
-
-                        OnFadeEnded?.Invoke();
-
-                        yield break;
-                    }
-                }
-            }
-
-            yield return new WaitForEndOfFrame();
-        }  
+        seq.Append(show);
+        seq.AppendInterval(pauseTime);
+        seq.Append(hide).onComplete += () => OnFadingEnded?.Invoke();
     }
 }

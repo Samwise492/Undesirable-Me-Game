@@ -10,15 +10,11 @@ public class TriggerToLoadSceneByAnimation : AnimationTrigger
     [SerializeField]
     private PackedSceneData sceneToLoadData;
 
-    [Header("System")]
-    [SerializeField]
-    private bool isFadeBeforeLoading;
     [SerializeField]
     private FadeScreenController fadeScreenController;
-
     protected override void Start()
     {
-        if (isFadeBeforeLoading)
+        if (isFadeBeforeSceneLoad)
         {
             animationTrigger.OnAnimationCompleted.AddListener(FadeScreen);
         }
@@ -40,7 +36,7 @@ public class TriggerToLoadSceneByAnimation : AnimationTrigger
 
     private void FadeScreen(string eventArg)
     {
-        fadeScreenController.FadeScreen(sceneToLoadData);
+        fadeScreenController.FadeScreenIntoNewScene(sceneToLoadData);
     }
 
     private void LoadScene(string eventArg)
